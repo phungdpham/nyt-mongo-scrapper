@@ -1,0 +1,35 @@
+{
+  "name": "nyt-mongo-scrapper",
+  "version": "1.0.0",
+  "description": "'practice using mongoose and node'",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phungdpham/nyt-mongo-scrapper.git"
+  },
+  "keywords": [
+    "mongoose",
+    "nodejs",
+    "express",
+    "body-parser",
+    "cheerio",
+    "request"
+  ],
+  "author": "Phung Pham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phungdpham/nyt-mongo-scrapper/issues"
+  },
+  "homepage": "https://github.com/phungdpham/nyt-mongo-scrapper#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cheerio": "^1.0.0-rc.2",
+    "espress": "0.0.0",
+    "express-handlebars": "^3.0.0",
+    "mongoose": "^5.4.1",
+    "request": "^2.88.0"
+  }
+}
