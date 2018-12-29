@@ -30,6 +30,6 @@ var headlineSchema = new Schema({
 
 //Create the headline model using the headlineSchema
 
-var Headline = moongoose.model('Headline', headlineSchema)
+var Headline = mongoose.model('Headline', headlineSchema)
 
 module.exports = Headline;
