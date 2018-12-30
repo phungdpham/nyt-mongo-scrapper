@@ -2,15 +2,15 @@ $(document).ready(function() {
     var articleContainer = $('.article-container');
 
     $(document).on('click', '.btn.delete', handleArticleDelete);
-    $(document).on('click', '.btn-notes', handleArticleNotes);
-    $(document).on('click', '.btn-save', handleNoteSave);
-    $(document).on('click', '.btn-note-delete', handleNoteDelete);
+    $(document).on('click', '.btn.notes', handleArticleNotes);
+    $(document).on('click', '.btn.save', handleNoteSave);
+    $(document).on('click', '.btn.note-delete', handleNoteDelete);
     $('.clear').on('click', handleArticleClear);
 
     function initPage() {
         $.get('/api/headlines?saved=true').then(function(data) {
             articleContainer.empty();
-            if(data & data.length) {
+            if (data & data.length) {
                 renderArticles(data);
             } else {
                 renderEmpty();
@@ -75,7 +75,7 @@ $(document).ready(function() {
         } else {
             for (var i = 0; i < data.notes.length; i++) {
                 currentNote = $("<li class='list-group-item note'>")
-                    .text(data.notes[i].notesText)
+                    .text(data.notes[i].noteText)
                     .append($("<button class='btn btn-danger note-delete'>x</button>"));
                 currentNote.children('button').data('_id', data.notes[i]._id);
                 notesToRender.push(currentNote);
@@ -83,4 +83,88 @@ $(document).ready(function() {
         }
         $('.note-container').append(notesToRender);
     }
-})
+
+    function handleArticleDelete() {
+        //grab the id of the article to delete from the card element button sits inside
+        var articleToDelete = $(this)
+            .parents('.card')
+            .data();
+
+        //remov card from page
+        $(this)
+            .parents('.card')
+            .remove();
+        //use a delete method
+        $.ajax({
+            method: 'DELETE',
+            url: '/api/headlines/' + articleToDelete._id
+        }).then(function(data) {
+            //run initPage again which will re-render list of saved articles
+            if (data.ok) {
+                initPage();
+            }
+        });
+    }
+    function handleArticleNotes(event) {
+        //grab the id of the article to get notes for the card element
+        var currentArticle = $(this)
+            .parents('.card')
+            .data();
+        //grab any notes with this headline/article id
+        $.get('/api/notes/' + currentArticle._id).then(function(data) {
+            var modalText = $("<div class='container-fluid text-content'>").append(
+                $('<h4>').text('Notes for Article: ' + currentArticle._id),
+                $('<hr>'),
+                $("<ul class='list-group note-container'>"),
+                $("<textarea placeholder='New Note' rows='4' cols = 60>"),
+                $("<button class='btn-btn-success save'>Save Note</Button")
+            );
+            //Adding the formatted html to the note modal
+            bootbox.dialog({
+                message: modalText,
+                closeButton: true
+            });
+            var noteData = {
+                _id: currentArticles._id,
+                notes: data || []
+            };
+            //Adding a new note
+            $('.btn.save').data('article', noteData);
+            renderNotesList(noteData);
+        });
+    }
+
+    function handleNoteSave() {
+        var noteData;
+        var newNote = $('.bootbox-body textarea')
+            .val()
+            .trim();
+
+        if (newNote) {
+            noteData = { _headlineId: $(this).data('article')._id, noteText: newNote };
+            $.post('/api/notes', noteData).then(function() {
+                //whensaving is complete, close the modal
+                bootbox.hideAll();
+            });
+        }
+    }
+
+    function handleNoteDelete() {
+        var noteToDelete = $(this).data('_id');
+        $.ajax({
+            url: '/api/notes/' + noteToDelete,
+            method: 'DELETE'
+        }).then(function() {
+            //when done, hide the modal
+            bootbox.hideAll();
+        });
+    }
+
+    function handleArticleClear() {
+        $.get('api/clear')
+            .then(function() {
+                articleContainer.empty();
+                initPage();
+            });
+    }
+});

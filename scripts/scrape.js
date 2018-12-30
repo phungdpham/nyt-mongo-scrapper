@@ -7,7 +7,7 @@ var cheerio = require ('cheerio');
 //Function to scrap NYTimes website
 var scrape = function() {
     //scrape the nytimes webiste
-    return axios.get('http://www.nytimes.com'). then(function(res) {
+    return axios.get('http://www.nytimes.com').then(function(res) {
         var $ = cheerio.load(res.data);
         var articles = [];
 
@@ -39,7 +39,7 @@ var scrape = function() {
             }
         });
         return articles;
-    })
+    });
 }
 
 module.exports = scrape;
